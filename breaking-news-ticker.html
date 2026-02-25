@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:'Arial Black',Arial,sans-serif; }
+
+  .ticker-wrap {
+    position:absolute; bottom:60px; left:0; right:0;
+    display:flex; align-items:center; height:54px;
+  }
+  .breaking-label {
+    background:#CC0000; color:#fff;
+    font-size:18px; font-weight:900; letter-spacing:2px;
+    padding:0 20px; height:54px; display:flex; align-items:center;
+    white-space:nowrap; z-index:2; text-transform:uppercase;
+    flex-shrink:0;
+  }
+  .live-dot {
+    width:10px; height:10px; background:#fff; border-radius:50%;
+    margin-right:8px; animation:blink 1s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .ticker-bg {
+    flex:1; background:rgba(0,0,0,0.85); height:54px;
+    overflow:hidden; position:relative;
+  }
+  .ticker-track {
+    display:flex; align-items:center; height:54px;
+    white-space:nowrap;
+    animation:scroll 35s linear infinite;
+  }
+  .ticker-item {
+    color:#fff; font-size:19px; font-weight:700;
+    padding:0 60px; letter-spacing:0.5px;
+  }
+  .ticker-item span { color:#FFDD00; margin-right:12px; }
+  @keyframes scroll {
+    0%   { transform:translateX(100vw); }
+    100% { transform:translateX(-100%); }
+  }
+  .red-line { position:absolute; top:0; left:0; right:0; height:3px; background:#CC0000; }
+</style>
+</head>
+<body>
+<div class="ticker-wrap">
+  <div class="breaking-label"><div class="live-dot"></div>BREAKING NEWS</div>
+  <div class="ticker-bg">
+    <div class="red-line"></div>
+    <div class="ticker-track">
+      <div class="ticker-item"><span>●</span>Global markets hit record highs as inflation eases across major economies</div>
+      <div class="ticker-item"><span>●</span>Tech summit underway — leaders gather to discuss AI regulation frameworks</div>
+      <div class="ticker-item"><span>●</span>Emergency services respond to major infrastructure incident in downtown area</div>
+      <div class="ticker-item"><span>●</span>Scientists announce breakthrough in renewable energy storage technology</div>
+      <div class="ticker-item"><span>●</span>International trade talks resume after months of diplomatic negotiations</div>
+      <div class="ticker-item"><span>●</span>Weather alert: Severe storm warning issued for coastal regions this weekend</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

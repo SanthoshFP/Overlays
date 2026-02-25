@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:Arial,sans-serif; }
+
+  .promo-banner {
+    position:absolute; bottom:80px; left:50%;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg,#0A1628,#0A2045,#0A1628);
+    border-radius:10px; overflow:hidden;
+    display:flex; align-items:center;
+    min-width:780px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.5);
+    border:1px solid rgba(0,102,255,0.3);
+    animation:slideUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+    opacity:0; transform:translateX(-50%) translateY(30px);
+  }
+  @keyframes slideUp {
+    to { opacity:1; transform:translateX(-50%) translateY(0); }
+  }
+  .promo-accent { width:6px; height:100%; background:linear-gradient(180deg,#0066FF,#00C6FF); flex-shrink:0; align-self:stretch; }
+  .promo-icon { font-size:38px; padding:16px 18px; flex-shrink:0; }
+  .promo-content { flex:1; padding:14px 6px; }
+  .promo-tag { font-size:11px; color:#0099FF; letter-spacing:3px; text-transform:uppercase; font-weight:700; margin-bottom:4px; }
+  .promo-headline { font-size:22px; font-weight:800; color:#FFFFFF; line-height:1.2; }
+  .promo-sub { font-size:13px; color:#8899BB; margin-top:4px; }
+  .promo-cta {
+    margin-right:20px; background:linear-gradient(135deg,#0066FF,#0044CC);
+    color:#fff; font-size:14px; font-weight:700;
+    padding:12px 24px; border-radius:6px;
+    white-space:nowrap; letter-spacing:0.5px;
+    flex-shrink:0;
+    box-shadow:0 4px 14px rgba(0,102,255,0.4);
+    animation:glow 2s ease infinite;
+  }
+  @keyframes glow {
+    0%,100%{ box-shadow:0 4px 14px rgba(0,102,255,0.4); }
+    50%    { box-shadow:0 4px 28px rgba(0,102,255,0.75); }
+  }
+  .promo-timer { font-size:11px; color:#667799; margin-top:3px; display:flex; align-items:center; gap:4px; }
+  .timer-val { color:#FFAA00; font-weight:700; }
+</style>
+</head>
+<body>
+<div class="promo-banner">
+  <div class="promo-accent"></div>
+  <div class="promo-icon">🎯</div>
+  <div class="promo-content">
+    <div class="promo-tag">Limited Time Offer</div>
+    <div class="promo-headline">Get 3 Months Free — FastPix Pro Plan</div>
+    <div class="promo-sub">Unlimited channels · HD streaming · Priority support</div>
+    <div class="promo-timer">⏱ Offer ends in: <span class="timer-val" id="offer-timer">23:59:47</span></div>
+  </div>
+  <div class="promo-cta">Claim Offer →</div>
+</div>
+
+<script>
+let secs = 23*3600+59*60+47;
+function pad(n){ return String(n).padStart(2,'0'); }
+function tick(){
+  if(secs<=0) return;
+  secs--;
+  document.getElementById('offer-timer').textContent =
+    pad(Math.floor(secs/3600))+':'+pad(Math.floor((secs%3600)/60))+':'+pad(secs%60);
+  setTimeout(tick,1000);
+}
+setTimeout(tick,1000);
+</script>
+</body>
+</html>

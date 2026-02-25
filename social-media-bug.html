@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:Arial,sans-serif; }
+
+  .social-bug {
+    position:absolute; bottom:40px; right:50px;
+    display:flex; flex-direction:column; gap:10px;
+    align-items:flex-end;
+  }
+  .bug-item {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(0,0,0,0.72); border-radius:30px;
+    padding:8px 16px 8px 12px;
+    animation:fadeIn 0.4s ease forwards;
+    opacity:0;
+  }
+  .bug-item:nth-child(1){ animation-delay:0.0s; }
+  .bug-item:nth-child(2){ animation-delay:0.2s; }
+  .bug-item:nth-child(3){ animation-delay:0.4s; }
+  .bug-item:nth-child(4){ animation-delay:0.6s; }
+  @keyframes fadeIn { to { opacity:1; } }
+
+  .bug-icon {
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; flex-shrink:0;
+  }
+  .bug-text { color:#FFFFFF; font-size:14px; font-weight:600; letter-spacing:0.3px; }
+  .bug-sub  { color:#AAAAAA; font-size:11px; margin-top:1px; }
+
+  .yt  { background:#FF0000; }
+  .tw  { background:#1DA1F2; }
+  .ig  { background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+  .web { background:#0066FF; }
+
+  .subscribe-pill {
+    background:linear-gradient(90deg,#FF0000,#CC0000);
+    color:#fff; font-size:13px; font-weight:700;
+    padding:6px 16px; border-radius:20px;
+    letter-spacing:1px; text-transform:uppercase;
+    display:flex; align-items:center; gap:6px;
+    animation:pulse 2s ease infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+</style>
+</head>
+<body>
+<div class="social-bug">
+  <div class="subscribe-pill">🔔 Subscribe Now</div>
+  <div class="bug-item">
+    <div class="bug-icon yt">▶</div>
+    <div><div class="bug-text">@FastPixChannel</div><div class="bug-sub">YouTube · 2.1M subscribers</div></div>
+  </div>
+  <div class="bug-item">
+    <div class="bug-icon tw" style="color:#fff;font-weight:900;font-size:13px;">𝕏</div>
+    <div><div class="bug-text">@FastPixTV</div><div class="bug-sub">Twitter / X</div></div>
+  </div>
+  <div class="bug-item">
+    <div class="bug-icon ig" style="color:#fff;font-size:16px;">📷</div>
+    <div><div class="bug-text">@fastpix.tv</div><div class="bug-sub">Instagram</div></div>
+  </div>
+  <div class="bug-item">
+    <div class="bug-icon web" style="color:#fff;font-size:16px;">🌐</div>
+    <div><div class="bug-text">www.fastpix.io</div><div class="bug-sub">Watch live anytime</div></div>
+  </div>
+</div>
+</body>
+</html>

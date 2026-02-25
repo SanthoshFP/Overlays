@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:Arial,sans-serif; }
+
+  .poll-widget {
+    position:absolute; top:120px; right:60px;
+    background:rgba(8,12,24,0.88);
+    border-radius:14px; padding:22px 26px;
+    width:320px;
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    animation:slideIn 0.5s ease forwards; opacity:0;
+  }
+  @keyframes slideIn { to { opacity:1; } }
+
+  .poll-label { font-size:10px; color:#0099FF; letter-spacing:3px; text-transform:uppercase; font-weight:700; margin-bottom:10px; }
+  .poll-question { font-size:17px; font-weight:700; color:#FFFFFF; line-height:1.35; margin-bottom:18px; }
+
+  .poll-option { margin-bottom:12px; }
+  .opt-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  .opt-label { font-size:14px; color:#DDDDDD; }
+  .opt-pct { font-size:14px; font-weight:700; color:#FFFFFF; }
+  .bar-bg { height:8px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; transition:width 1s ease; }
+
+  .poll-meta { margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; }
+  .meta-item { font-size:11px; color:#556688; }
+  .meta-val { color:#8899AA; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="poll-widget">
+  <div class="poll-label">📊 Live Poll</div>
+  <div class="poll-question">Who will win the championship this season?</div>
+
+  <div class="poll-option">
+    <div class="opt-row"><span class="opt-label">🏀 Chicago Bulls</span><span class="opt-pct">38%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:0;background:linear-gradient(90deg,#003087,#4488FF)" data-w="38%"></div></div>
+  </div>
+  <div class="poll-option">
+    <div class="opt-row"><span class="opt-label">🔥 Miami Heat</span><span class="opt-pct">29%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:0;background:linear-gradient(90deg,#98002E,#FF4466)" data-w="29%"></div></div>
+  </div>
+  <div class="poll-option">
+    <div class="opt-row"><span class="opt-label">⚡ LA Lakers</span><span class="opt-pct">22%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:0;background:linear-gradient(90deg,#552583,#AA77FF)" data-w="22%"></div></div>
+  </div>
+  <div class="poll-option">
+    <div class="opt-row"><span class="opt-label">🌊 Golden State</span><span class="opt-pct">11%</span></div>
+    <div class="bar-bg"><div class="bar-fill" style="width:0;background:linear-gradient(90deg,#006BB6,#FFCC00)" data-w="11%"></div></div>
+  </div>
+
+  <div class="poll-meta">
+    <div class="meta-item">Votes: <span class="meta-val">24,831</span></div>
+    <div class="meta-item">Closes in: <span class="meta-val" id="pt">14:32</span></div>
+  </div>
+</div>
+
+<script>
+setTimeout(()=>{
+  document.querySelectorAll('.bar-fill').forEach(b=>{ b.style.width=b.dataset.w; });
+},200);
+
+let s=14*60+32;
+function pad(n){return String(n).padStart(2,'0');}
+function t(){
+  if(s<=0){document.getElementById('pt').textContent='Closed';return;}
+  s--; document.getElementById('pt').textContent=pad(Math.floor(s/60))+':'+pad(s%60);
+  setTimeout(t,1000);
+}
+setTimeout(t,1000);
+</script>
+</body>
+</html>

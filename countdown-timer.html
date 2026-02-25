@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:'Arial Black',Arial,sans-serif; }
+
+  .countdown-wrap {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+  }
+  .countdown-label {
+    font-size:22px; color:#FFFFFF; letter-spacing:6px;
+    text-transform:uppercase; margin-bottom:16px;
+    opacity:0.85; font-family:Arial,sans-serif; font-weight:400;
+  }
+  .timer-row { display:flex; align-items:center; justify-content:center; gap:10px; }
+  .time-block {
+    display:flex; flex-direction:column; align-items:center;
+    background:rgba(0,0,0,0.78);
+    border:2px solid rgba(255,255,255,0.12);
+    border-radius:12px; padding:18px 28px;
+    min-width:120px;
+    box-shadow:0 0 40px rgba(0,102,255,0.3);
+  }
+  .time-val {
+    font-size:72px; font-weight:900; color:#FFFFFF;
+    line-height:1; font-variant-numeric:tabular-nums;
+  }
+  .time-unit {
+    font-size:13px; color:#8899BB; letter-spacing:3px;
+    text-transform:uppercase; font-family:Arial,sans-serif;
+    font-weight:400; margin-top:6px;
+  }
+  .sep { font-size:60px; font-weight:900; color:rgba(255,255,255,0.3); animation:blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
+
+  .event-name {
+    margin-top:20px; font-size:18px; color:#6699FF;
+    letter-spacing:3px; font-family:Arial,sans-serif;
+    text-transform:uppercase;
+  }
+  .progress-bar {
+    width:500px; height:4px; background:rgba(255,255,255,0.1);
+    border-radius:2px; margin:14px auto 0;
+    overflow:hidden;
+  }
+  .progress-fill {
+    height:100%; background:linear-gradient(90deg,#0066FF,#00C6FF);
+    border-radius:2px; width:0;
+    animation:fillBar 60s linear forwards;
+  }
+  @keyframes fillBar { to { width:100%; } }
+</style>
+</head>
+<body>
+<div class="countdown-wrap">
+  <div class="countdown-label">Event Starts In</div>
+  <div class="timer-row">
+    <div class="time-block"><div class="time-val" id="hrs">00</div><div class="time-unit">Hours</div></div>
+    <div class="sep">:</div>
+    <div class="time-block"><div class="time-val" id="mins">00</div><div class="time-unit">Minutes</div></div>
+    <div class="sep">:</div>
+    <div class="time-block"><div class="time-val" id="secs">00</div><div class="time-unit">Seconds</div></div>
+  </div>
+  <div class="event-name">Live Championship Finals</div>
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+</div>
+
+<script>
+// Target: 2 hours from page load
+let end = Date.now() + 2*60*60*1000;
+function pad(n){ return String(n).padStart(2,'0'); }
+function tick(){
+  let diff = Math.max(0, Math.floor((end - Date.now())/1000));
+  document.getElementById('hrs').textContent  = pad(Math.floor(diff/3600));
+  document.getElementById('mins').textContent = pad(Math.floor((diff%3600)/60));
+  document.getElementById('secs').textContent = pad(diff%60);
+  if(diff>0) setTimeout(tick,1000);
+}
+tick();
+</script>
+</body>
+</html>

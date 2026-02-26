@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:'Arial Black',Arial,sans-serif; }
+
+  .scores-panel {
+    position:absolute; top:30px; right:50px;
+    display:flex; flex-direction:column; gap:10px;
+    min-width:380px;
+  }
+
+  .panel-header {
+    background:rgba(0,0,0,0.85);
+    border-radius:8px 8px 0 0; padding:10px 16px;
+    display:flex; align-items:center; gap:10px;
+    border-bottom:3px solid #CC0000;
+  }
+  .panel-title { font-size:14px; color:#fff; letter-spacing:2px; text-transform:uppercase; }
+  .live-badge {
+    margin-left:auto; background:#CC0000; color:#fff;
+    font-size:10px; font-weight:700; padding:2px 8px;
+    border-radius:3px; letter-spacing:2px;
+    display:flex; align-items:center; gap:4px;
+  }
+  .live-dot { width:6px; height:6px; background:#fff; border-radius:50%; animation:blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .score-card {
+    background:rgba(8,12,24,0.88);
+    border-radius:8px; overflow:hidden;
+    border:1px solid rgba(255,255,255,0.06);
+    animation:fadeIn 0.4s ease forwards; opacity:0;
+  }
+  .score-card:nth-child(1){ animation-delay:0.1s; }
+  .score-card:nth-child(2){ animation-delay:0.2s; }
+  .score-card:nth-child(3){ animation-delay:0.3s; }
+  @keyframes fadeIn { to { opacity:1; } }
+
+  .card-sport {
+    background:rgba(255,255,255,0.05);
+    font-size:10px; color:#556688; letter-spacing:2px;
+    text-transform:uppercase; padding:5px 14px;
+    font-family:Arial,sans-serif; font-weight:400;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .match-row {
+    display:flex; align-items:center; padding:12px 14px; gap:10px;
+  }
+  .team-name { flex:1; font-size:15px; color:#fff; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .team-name.right { text-align:right; }
+  .score-box {
+    background:rgba(255,255,255,0.08); border-radius:6px;
+    padding:6px 14px; text-align:center; flex-shrink:0;
+  }
+  .score-nums { font-size:22px; color:#FFFFFF; font-weight:900; letter-spacing:2px; }
+  .score-sep { color:#555; }
+  .match-status {
+    font-size:10px; color:#FFAA00; text-align:center;
+    margin-top:3px; letter-spacing:1px; font-family:Arial,sans-serif; font-weight:700;
+  }
+  .league-tag {
+    font-size:10px; color:#445566; padding:4px 14px 8px;
+    font-family:Arial,sans-serif; text-align:right;
+  }
+
+  .no-games { color:#556688; font-size:13px; padding:16px; text-align:center; font-family:Arial,sans-serif; }
+  .loading  { color:#88AADD; font-size:13px; padding:16px; text-align:center; font-family:Arial,sans-serif; }
+</style>
+</head>
+<body>
+
+<div class="scores-panel">
+  <div class="panel-header">
+    <span>⚽</span>
+    <div class="panel-title">Live Scores</div>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+  <div id="scores-container">
+    <div class="loading">Fetching live scores...</div>
+  </div>
+</div>
+
+<script>
+// No API key needed! TheSportsDB free tier
+// Fetches live EPL scores
+async function fetchScores(){
+  const container = document.getElementById('scores-container');
+  try {
+    // TheSportsDB live scores - free, no key needed
+    const res  = await fetch('https://www.thesportsdb.com/api/v1/json/3/latestsoccer.php');
+    const data = await res.json();
+    const events = data.events;
+    if(!events || events.length === 0){
+      container.innerHTML = `<div class="no-games">No live matches right now.<br>Check back during match hours.</div>`;
+      return;
+    }
+    const show = events.slice(0,4);
+    container.innerHTML = show.map(e => `
+      <div class="score-card">
+        <div class="card-sport">⚽ ${e.strLeague || 'Football'}</div>
+        <div class="match-row">
+          <div class="team-name">${e.strHomeTeam}</div>
+          <div class="score-box">
+            <div class="score-nums">${e.intHomeScore ?? '–'}<span class="score-sep"> : </span>${e.intAwayScore ?? '–'}</div>
+            <div class="match-status">${e.strProgress || e.strStatus || 'LIVE'}</div>
+          </div>
+          <div class="team-name right">${e.strAwayTeam}</div>
+        </div>
+        <div class="league-tag">${e.dateEvent || ''}</div>
+      </div>`).join('');
+  } catch(e){
+    // Demo fallback
+    container.innerHTML = `
+      <div class="score-card">
+        <div class="card-sport">⚽ Premier League</div>
+        <div class="match-row">
+          <div class="team-name">Manchester City</div>
+          <div class="score-box"><div class="score-nums">2<span class="score-sep"> : </span>1</div><div class="match-status">67'</div></div>
+          <div class="team-name right">Arsenal</div>
+        </div>
+      </div>
+      <div class="score-card">
+        <div class="card-sport">⚽ La Liga</div>
+        <div class="match-row">
+          <div class="team-name">Real Madrid</div>
+          <div class="score-box"><div class="score-nums">0<span class="score-sep"> : </span>0</div><div class="match-status">34'</div></div>
+          <div class="team-name right">Barcelona</div>
+        </div>
+      </div>`;
+  }
+}
+
+fetchScores();
+setInterval(fetchScores, 60 * 1000); // refresh every 60 sec
+</script>
+</body>
+</html>

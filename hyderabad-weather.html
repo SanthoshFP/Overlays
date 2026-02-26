@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:transparent; overflow:hidden; width:1920px; height:1080px; font-family:Arial,sans-serif; }
+
+  .weather-widget {
+    position:absolute; top:30px; left:50px;
+    background:linear-gradient(135deg,rgba(10,30,70,0.90),rgba(5,15,40,0.92));
+    border-radius:14px; padding:22px 28px;
+    min-width:320px;
+    border:1px solid rgba(100,160,255,0.25);
+    box-shadow:0 8px 40px rgba(0,0,0,0.5);
+    animation:fadeIn 0.6s ease forwards;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+
+  .location-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+  .pin { font-size:14px; }
+  .city-name { font-size:14px; color:#88AADD; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+  .live-badge {
+    margin-left:auto; background:#CC0000; color:#fff;
+    font-size:10px; font-weight:700; padding:2px 8px;
+    border-radius:3px; letter-spacing:2px;
+    display:flex; align-items:center; gap:4px;
+  }
+  .live-dot { width:6px; height:6px; background:#fff; border-radius:50%; animation:blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .main-row { display:flex; align-items:center; gap:18px; margin-bottom:14px; }
+  .weather-icon { font-size:58px; line-height:1; }
+  .temp-block {}
+  .temp { font-size:60px; font-weight:900; color:#FFFFFF; line-height:1; font-family:'Arial Black',Arial; }
+  .unit { font-size:26px; color:#88AADD; }
+  .feels { font-size:12px; color:#88AADD; margin-top:4px; }
+  .condition { font-size:17px; color:#CCDDFF; font-weight:600; margin-top:4px; }
+
+  .details-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:8px; margin-top:10px; padding-top:12px;
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+  .detail { display:flex; align-items:center; gap:8px; }
+  .d-icon { font-size:16px; }
+  .d-info {}
+  .d-label { font-size:10px; color:#556688; letter-spacing:1px; text-transform:uppercase; }
+  .d-val { font-size:14px; color:#CCE0FF; font-weight:700; }
+
+  .updated { font-size:10px; color:#445566; margin-top:12px; text-align:right; }
+
+  .error-msg { color:#FF6666; font-size:13px; padding:10px; }
+
+  /* API KEY NOTICE */
+  .api-notice {
+    position:absolute; bottom:10px; left:50px;
+    background:rgba(255,150,0,0.15); border:1px solid rgba(255,150,0,0.4);
+    border-radius:6px; padding:8px 14px;
+    font-size:11px; color:#FFAA44; letter-spacing:0.5px;
+    display:none;
+  }
+  .api-notice.show { display:block; }
+</style>
+</head>
+<body>
+
+<div class="weather-widget" id="widget">
+  <div class="location-row">
+    <span class="pin">📍</span>
+    <span class="city-name">Hyderabad, IN</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+  <div id="content">
+    <div style="color:#88AADD;font-size:14px;">Loading weather...</div>
+  </div>
+  <div class="updated" id="updated"></div>
+</div>
+
+<div class="api-notice" id="notice">
+  ⚠️ Replace YOUR_API_KEY with your OpenWeatherMap key to see live data
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  STEP 1: Sign up free at openweathermap.org
+//  STEP 2: Replace YOUR_API_KEY below
+// ════════════════════════════════════════════
+const API_KEY = 'YOUR_API_KEY';
+const CITY    = 'Hyderabad';
+const COUNTRY = 'IN';
+
+const icons = {
+  '01d':'☀️','01n':'🌙','02d':'⛅','02n':'🌙',
+  '03d':'☁️','03n':'☁️','04d':'☁️','04n':'☁️',
+  '09d':'🌧️','09n':'🌧️','10d':'🌦️','10n':'🌧️',
+  '11d':'⛈️','11n':'⛈️','13d':'❄️','13n':'❄️',
+  '50d':'🌫️','50n':'🌫️'
+};
+
+function getWindDir(deg){
+  const dirs=['N','NE','E','SE','S','SW','W','NW'];
+  return dirs[Math.round(deg/45)%8];
+}
+
+async function fetchWeather(){
+  if(API_KEY === 'YOUR_API_KEY'){
+    document.getElementById('notice').classList.add('show');
+    document.getElementById('content').innerHTML = `
+      <div class="main-row">
+        <div class="weather-icon">🌤️</div>
+        <div class="temp-block">
+          <div class="temp">34<span class="unit">°C</span></div>
+          <div class="condition">Partly Cloudy</div>
+          <div class="feels">Feels like 38°C</div>
+        </div>
+      </div>
+      <div class="details-grid">
+        <div class="detail"><span class="d-icon">💧</span><div class="d-info"><div class="d-label">Humidity</div><div class="d-val">65%</div></div></div>
+        <div class="detail"><span class="d-icon">💨</span><div class="d-info"><div class="d-label">Wind</div><div class="d-val">12 km/h SW</div></div></div>
+        <div class="detail"><span class="d-icon">👁️</span><div class="d-info"><div class="d-label">Visibility</div><div class="d-val">6 km</div></div></div>
+        <div class="detail"><span class="d-icon">🌡️</span><div class="d-info"><div class="d-label">Pressure</div><div class="d-val">1008 hPa</div></div></div>
+      </div>`;
+    document.getElementById('updated').textContent = '⚠️ Demo data — add API key for live weather';
+    return;
+  }
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${CITY},${COUNTRY}&appid=${API_KEY}&units=metric`;
+    const res  = await fetch(url);
+    const d    = await res.json();
+    if(d.cod !== 200){ throw new Error(d.message); }
+    const icon = icons[d.weather[0].icon] || '🌡️';
+    const now  = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('content').innerHTML = `
+      <div class="main-row">
+        <div class="weather-icon">${icon}</div>
+        <div class="temp-block">
+          <div class="temp">${Math.round(d.main.temp)}<span class="unit">°C</span></div>
+          <div class="condition">${d.weather[0].description.replace(/\b\w/g,c=>c.toUpperCase())}</div>
+          <div class="feels">Feels like ${Math.round(d.main.feels_like)}°C</div>
+        </div>
+      </div>
+      <div class="details-grid">
+        <div class="detail"><span class="d-icon">💧</span><div class="d-info"><div class="d-label">Humidity</div><div class="d-val">${d.main.humidity}%</div></div></div>
+        <div class="detail"><span class="d-icon">💨</span><div class="d-info"><div class="d-label">Wind</div><div class="d-val">${Math.round(d.wind.speed*3.6)} km/h ${getWindDir(d.wind.deg)}</div></div></div>
+        <div class="detail"><span class="d-icon">👁️</span><div class="d-info"><div class="d-label">Visibility</div><div class="d-val">${(d.visibility/1000).toFixed(1)} km</div></div></div>
+        <div class="detail"><span class="d-icon">🌡️</span><div class="d-info"><div class="d-label">Pressure</div><div class="d-val">${d.main.pressure} hPa</div></div></div>
+      </div>`;
+    document.getElementById('updated').textContent = `Last updated: ${now} IST`;
+  } catch(e){
+    document.getElementById('content').innerHTML = `<div class="error-msg">⚠️ ${e.message}</div>`;
+  }
+}
+
+fetchWeather();
+setInterval(fetchWeather, 5 * 60 * 1000); // refresh every 5 mins
+</script>
+</body>
+</html>

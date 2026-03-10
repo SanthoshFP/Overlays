@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:transparent;
+    width:1920px; height:1080px;
+    overflow:hidden; font-family:Arial,sans-serif;
+  }
+
+  /* ── Left Side Panel ── */
+  .news-panel {
+    position:absolute; top:0; left:0;
+    width:72px; height:1080px;
+    background:rgba(8,12,28,0.94);
+    border-right:3px solid #CC0000;
+    display:flex; flex-direction:column;
+    align-items:center;
+  }
+
+  /* Channel branding top */
+  .channel-brand {
+    width:100%; background:#CC0000;
+    padding:14px 0; text-align:center;
+    flex-shrink:0;
+  }
+  .brand-logo {
+    font-size:11px; font-weight:900; color:#fff;
+    letter-spacing:1px; line-height:1.3;
+    text-transform:uppercase;
+  }
+  .brand-dot {
+    width:8px; height:8px; background:#fff;
+    border-radius:50%; margin:6px auto 0;
+  }
+
+  /* LIVE badge */
+  .live-strip {
+    width:100%; background:#880000;
+    padding:8px 0; text-align:center; flex-shrink:0;
+  }
+  .live-text {
+    font-size:10px; font-weight:900; color:#fff;
+    letter-spacing:2px; writing-mode:horizontal-tb;
+  }
+
+  /* Scrolling headlines container */
+  .headlines-wrap {
+    flex:1; width:100%; overflow:hidden;
+    position:relative;
+  }
+  .headlines-track {
+    position:absolute; top:0; left:0; width:100%;
+    display:flex; flex-direction:column;
+    align-items:center; gap:0;
+  }
+
+  /* Each headline card */
+  .headline-card {
+    width:100%; padding:18px 8px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    text-align:center; flex-shrink:0; cursor:default;
+  }
+  .headline-card.active {
+    background:rgba(204,0,0,0.18);
+    border-left:3px solid #CC0000;
+  }
+  .hl-category {
+    font-size:8px; color:#CC0000; font-weight:900;
+    letter-spacing:1px; text-transform:uppercase;
+    margin-bottom:6px;
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    transform:rotate(180deg);
+    margin:0 auto 6px;
+  }
+  .hl-text {
+    font-size:10px; color:#CCDDFF; font-weight:700;
+    line-height:1.5;
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    transform:rotate(180deg);
+    margin:0 auto;
+    word-break:break-word;
+  }
+  .headline-card.active .hl-text { color:#FFFFFF; }
+
+  /* Time strip at bottom */
+  .time-strip {
+    width:100%; background:rgba(0,0,0,0.6);
+    padding:10px 0; text-align:center; flex-shrink:0;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  .time-txt {
+    font-size:10px; color:#88AADD; letter-spacing:1px;
+    writing-mode:vertical-rl; transform:rotate(180deg);
+    margin:0 auto;
+  }
+
+  /* ── Expanded headline popup (center screen) ── */
+  .headline-popup {
+    position:absolute; bottom:80px; left:90px;
+    max-width:700px;
+    background:rgba(8,12,28,0.95);
+    border-left:4px solid #CC0000;
+    border-radius:0 8px 8px 0;
+    padding:16px 22px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.6);
+    opacity:0;
+  }
+  .popup-category {
+    font-size:10px; color:#CC0000; font-weight:900;
+    letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .popup-dot { width:6px; height:6px; background:#CC0000; border-radius:50%; }
+  .popup-headline {
+    font-size:20px; color:#FFFFFF; font-weight:900;
+    line-height:1.35; letter-spacing:0.3px;
+  }
+  .popup-source {
+    font-size:11px; color:#556688; margin-top:6px; letter-spacing:1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Left vertical news panel -->
+<div class="news-panel">
+  <div class="channel-brand">
+    <div class="brand-logo">FP<br>NEWS</div>
+    <div class="brand-dot" id="brandDot"></div>
+  </div>
+  <div class="live-strip">
+    <div class="live-text">LIVE</div>
+  </div>
+  <div class="headlines-wrap" id="wrap">
+    <div class="headlines-track" id="track"></div>
+  </div>
+  <div class="time-strip">
+    <div class="time-txt" id="timeTxt">00:00</div>
+  </div>
+</div>
+
+<!-- Headline popup bottom-left -->
+<div class="headline-popup" id="popup">
+  <div class="popup-category"><div class="popup-dot"></div><span id="popupCat">WORLD</span></div>
+  <div class="popup-headline" id="popupText">Loading...</div>
+  <div class="popup-source" id="popupSource">FastPix News Network · Live</div>
+</div>
+
+<script>
+const headlines = [
+  { cat:'WORLD',    text:'Global leaders gather for UN Climate Summit to discuss emission reduction targets for 2030' },
+  { cat:'INDIA',    text:'India economy grows 7.2% — fastest among G20 nations this quarter' },
+  { cat:'TECH',     text:'Tech giants announce major AI safety coalition with new governance framework' },
+  { cat:'SCIENCE',  text:'Scientists discover potential breakthrough in Alzheimer\'s treatment research' },
+  { cat:'HYDERABAD',text:'Hyderabad emerges as top global technology investment destination in 2026' },
+  { cat:'SPACE',    text:'International Space Station crew completes critical maintenance spacewalk' },
+  { cat:'FINANCE',  text:'Central banks hold rates steady as inflation shows signs of easing globally' },
+  { cat:'ENERGY',   text:'Renewable energy surpasses fossil fuels in electricity generation for first time' },
+  { cat:'SPORTS',   text:'India beat Australia by 6 wickets in thrilling T20 World Cup final' },
+  { cat:'HEALTH',   text:'WHO issues new guidelines on screen time and mental health for young adults' },
+];
+
+const track   = document.getElementById('track');
+const popup   = document.getElementById('popup');
+const popupTxt= document.getElementById('popupText');
+const popupCat= document.getElementById('popupCat');
+
+let activeIdx     = 0;
+let trackPosY     = 0;   // JS scroll position
+let cardHeight    = 0;
+let scrolling     = false;
+
+// ── Build vertical cards ──
+function buildCards() {
+  // triple the headlines for seamless loop
+  const items = [...headlines, ...headlines, ...headlines];
+  track.innerHTML = items.map((h, i) => `
+    <div class="headline-card" id="card-${i}">
+      <div class="hl-category">${h.cat}</div>
+      <div class="hl-text">${h.text}</div>
+    </div>`).join('');
+}
+
+buildCards();
+
+// ── Measure card height after render ──
+setTimeout(() => {
+  const first = document.getElementById('card-0');
+  if (first) cardHeight = first.offsetHeight;
+  // Start in the middle set so we can loop seamlessly
+  trackPosY = -headlines.length * cardHeight;
+  track.style.transform = `translateY(${trackPosY}px)`;
+  startCycle();
+}, 120);
+
+// ── JS scroll: advance one card at a time ──
+function scrollToNext() {
+  if (scrolling) return;
+  scrolling = true;
+
+  const target = trackPosY - cardHeight;
+  const startY = trackPosY;
+  const dur    = 600; // ms for one card scroll
+  let   startT = null;
+
+  function step(ts) {
+    if (!startT) startT = ts;
+    const t   = Math.min(1, (ts - startT) / dur);
+    const ease= t < 0.5 ? 2*t*t : -1+(4-2*t)*t; // easeInOut
+    trackPosY = startY + (target - startY) * ease;
+    track.style.transform = `translateY(${trackPosY}px)`;
+
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      trackPosY = target;
+
+      // Loop reset: if we've scrolled past 2nd set, jump back to 1st
+      const totalH = headlines.length * cardHeight;
+      if (Math.abs(trackPosY) >= totalH * 2) {
+        trackPosY += totalH;
+        track.style.transform = `translateY(${trackPosY}px)`;
+      }
+
+      scrolling = false;
+    }
+  }
+  requestAnimationFrame(step);
+
+  // Update active card highlight and popup
+  activeIdx = (activeIdx + 1) % headlines.length;
+  updateActive();
+}
+
+function updateActive() {
+  // Highlight the card currently in "slot 1" of the visible area
+  document.querySelectorAll('.headline-card').forEach((c, i) => {
+    c.classList.remove('active');
+    if (i % headlines.length === activeIdx) c.classList.add('active');
+  });
+  showPopup(activeIdx);
+}
+
+// ── Popup: fade in → show 3s → fade out ──
+let popupTimer = null;
+function showPopup(idx) {
+  const h = headlines[idx];
+  clearTimeout(popupTimer);
+
+  popupTxt.textContent = h.text;
+  popupCat.textContent = h.cat;
+
+  // Fade in (one-off CSS transition)
+  popup.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  popup.style.opacity    = '1';
+  popup.style.transform  = 'translateX(0)';
+
+  popupTimer = setTimeout(() => {
+    popup.style.opacity   = '0';
+    popup.style.transform = 'translateX(-20px)';
+  }, 3200);
+}
+
+// ── Cycle: scroll every 4 seconds ──
+function startCycle() {
+  updateActive();
+  setInterval(scrollToNext, 4000);
+}
+
+// ── JS clock update ──
+function updateTime() {
+  const t = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('timeTxt').textContent = t;
+}
+updateTime();
+setInterval(updateTime, 1000);
+
+// ── JS brand-dot blink ──
+let dotOn = true;
+setInterval(() => {
+  dotOn = !dotOn;
+  document.getElementById('brandDot').style.opacity = dotOn ? '1' : '0';
+}, 800);
+</script>
+</body>
+</html>
